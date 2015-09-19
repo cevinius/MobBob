@@ -127,11 +127,13 @@
 // Setup Arduino Pins - Set these for your particular robot.
 //----------------------------------------------------------------------------------
 
-const int SERVO_LEFT_HIP   = 6;
-const int SERVO_LEFT_FOOT  = 7;
-const int SERVO_RIGHT_HIP  = 8;
-const int SERVO_RIGHT_FOOT = 9;
+const int SERVO_LEFT_HIP   = 5;
+const int SERVO_LEFT_FOOT  = 4;
+const int SERVO_RIGHT_HIP  = 3;
+const int SERVO_RIGHT_FOOT = 2;
 
+// These next ones are not currently used... but may be in the future.
+// So ignore these for now and leave them as is.
 const int INPUT_LEFT_HIP   = A3;
 const int INPUT_LEFT_FOOT  = A2;
 const int INPUT_RIGHT_HIP  = A1;
