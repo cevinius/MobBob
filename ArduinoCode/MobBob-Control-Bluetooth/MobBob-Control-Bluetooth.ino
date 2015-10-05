@@ -1,12 +1,13 @@
 /*
- * ======================================
- *   MobBob Control Program
+ * =============================================================
+ *   MobBob Control Program - Software Serial Bluetooth Version
  *   by Kevin Chan (aka Cevinius)
- * ======================================
+ * =============================================================
  *
- * This program enables MobBob to be controlled using serial commands. On most boards, this means you can
- * interactively send commands to MobBob using the Arduino Serial Monitor. On the Bluno (which is what I'm
- * using), the commands can be sent over Bluetooth LE.
+ * This program enables MobBob to be controlled using serial commands. In this version of the code, the
+ * commands are received over a software serial port, with pins defined in the #define near the top.
+ * This means you can use any Arduino compatible board, and plug a bluetooth card into the pins set for
+ * software serial. (As opposed to the other version of this designed for the Bluno board from DFRobot.)
  *
  * This program is long and contains 2 main components - a smooth servo animation program and a serial
  * command parser program.
@@ -115,13 +116,20 @@
  */
  
 #include <Servo.h>
+#include <SoftwareSerial.h>
 
 //----------------------------------------------------------------------------------
 // Speed of serial communication - Set this for your serial (bluetooth) card.
 //----------------------------------------------------------------------------------
 
-// Serial communication speed with the Bluno. Default is 115200.
+// Serial communication speed with the bluetooth board.
+// Some boards default to 9600. The board I have has a default value of 115200.
 #define SERIAL_SPEED 115200
+
+// Setup a Software Serial port on these pins.
+const int rxPin = 11; // pin used to receive data
+const int txPin = 12; // pin used to send data
+SoftwareSerial softwareSerial(rxPin, txPin);
 
 
 //----------------------------------------------------------------------------------
@@ -129,10 +137,9 @@
 //----------------------------------------------------------------------------------
 
 const int SERVO_LEFT_HIP   = 5;
-const int SERVO_LEFT_FOOT  = 4;
+const int SERVO_LEFT_FOOT  = 2;
 const int SERVO_RIGHT_HIP  = 3;
-const int SERVO_RIGHT_FOOT = 2;
-
+const int SERVO_RIGHT_FOOT = 4;
 
 // I want this code to be usable on all 4-servo bipeds! (Like Bob, MobBob)
 // I noticed that some builds mount the hip servos facing a different
@@ -147,20 +154,20 @@ const int SERVO_RIGHT_FOOT = 2;
 // Servo Max/Min/Centre Constants - Set these for your particular robot.
 //----------------------------------------------------------------------------------
 
-const int LEFT_HIP_CENTRE = 1430;
+const int LEFT_HIP_CENTRE = 1580;
 const int LEFT_HIP_MIN    = LEFT_HIP_CENTRE - 500;
 const int LEFT_HIP_MAX    = LEFT_HIP_CENTRE + 500;
 
-const int LEFT_FOOT_CENTRE = 1420;
-const int LEFT_FOOT_MIN    = LEFT_FOOT_CENTRE - 550;
+const int LEFT_FOOT_CENTRE = 1410;
+const int LEFT_FOOT_MIN    = LEFT_FOOT_CENTRE - 500;
 const int LEFT_FOOT_MAX    = LEFT_FOOT_CENTRE + 500;
 
-const int RIGHT_HIP_CENTRE = 1550;
+const int RIGHT_HIP_CENTRE = 1500;
 const int RIGHT_HIP_MIN    = RIGHT_HIP_CENTRE - 500;
 const int RIGHT_HIP_MAX    = RIGHT_HIP_CENTRE + 500;
 
-const int RIGHT_FOOT_CENTRE = 1400;
-const int RIGHT_FOOT_MIN    = RIGHT_FOOT_CENTRE - 550;
+const int RIGHT_FOOT_CENTRE = 1465;
+const int RIGHT_FOOT_MIN    = RIGHT_FOOT_CENTRE - 500;
 const int RIGHT_FOOT_MAX    = RIGHT_FOOT_CENTRE + 500;
 
 
@@ -195,7 +202,7 @@ const int RIGHT_FOOT_VALUE = 4;
 
 // Constants used in the walking gait animation data.
 const int FOOT_DELTA = 150;
-const int HIP_DELTA  = FRONT_JOINT_HIPS * 150;
+const int HIP_DELTA  = FRONT_JOINT_HIPS * 120;
 
 
 // Goes to the default standing straight position. Used by stopAnim().
@@ -725,7 +732,7 @@ const int MAX_PARAM_LENGTH = 6;
 void setup() 
 {
     // Setup the main serial port
-    Serial.begin(SERIAL_SPEED);
+    softwareSerial.begin(SERIAL_SPEED);
     
     // Setup the Servos
     servoLeftHip.attach(  SERVO_LEFT_HIP,   LEFT_HIP_MIN,   LEFT_HIP_MAX);
@@ -761,7 +768,7 @@ void setup_Parser()
     currParserState = PARSER_WAITING;
     
     // Print this response to say we've booted and are ready.
-    Serial.println("<OK>");
+    softwareSerial.println("<OK>");
 }
 
 
@@ -775,9 +782,9 @@ void loop_Parser()
     //---------------------------------------------------------
     
     // Read from pin serial port and write it out on USB port.
-    if (Serial.available() > 0)
+    if (softwareSerial.available() > 0)
     {
-        char c = Serial.read();
+        char c = softwareSerial.read();
     
         // If we're in WAITING state, look for the START_CHAR.
         if (currParserState == PARSER_WAITING)
@@ -1119,7 +1126,7 @@ void loop_Parser()
             // Ready/OK Check: <OK>
             if ((currCmd[0] == 'O') && (currCmd[1] == 'K'))
             {
-                Serial.println("<OK>");
+                softwareSerial.println("<OK>");
             }
             
             // Set Servo: <SV, time, leftHip, leftFoot, rightHip, rightFoot>
@@ -1506,9 +1513,9 @@ void loop_Animation()
         {
             // This is the place to notify someone of an animation finishing after getting interrupted
             // Print the command string we just finished. -1 parameter indicates it was interrupted.
-            Serial.print("<");
-            Serial.print(animCompleteStr);
-            Serial.println(",-1>");
+            softwareSerial.print("<");
+            softwareSerial.print(animCompleteStr);
+            softwareSerial.println(",-1>");
             
             // Set the "start" positions to the current ones. So, when
             // we pay the next anim, we will tween from the current positions.
@@ -1635,9 +1642,9 @@ void loop_Animation()
                     {
                         // We've stopped, so can notify if needed.
                         // Print the command string we just finished.
-                        Serial.print("<");
-                        Serial.print(animCompleteStr);
-                        Serial.println(">");
+                        softwareSerial.print("<");
+                        softwareSerial.print(animCompleteStr);
+                        softwareSerial.println(">");
                     }
                 }
                 
@@ -1676,9 +1683,9 @@ void loop_Animation()
                     else
                     {
                         // Print the command string we just finished.
-                        Serial.print("<");
-                        Serial.print(animCompleteStr);
-                        Serial.println(">");
+                        softwareSerial.print("<");
+                        softwareSerial.print(animCompleteStr);
+                        softwareSerial.println(">");
                     }
                 }
             }
