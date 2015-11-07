@@ -164,6 +164,35 @@ const int RIGHT_FOOT_MIN    = RIGHT_FOOT_CENTRE - 550;
 const int RIGHT_FOOT_MAX    = RIGHT_FOOT_CENTRE + 500;
 
 
+//------------------------------------------------------------------------------
+// Helper functions to help calculate joint values in a more user-friendly way.
+// You can adjust the signs here if the servos are setup in a different way.
+// Updating here means the animation data doesn't need to be modified if the
+// servos are setup differently.
+// (E.g. Original Bob's hip servos are backwards to MobBob's.)
+//
+// (Also, I find it hard to remember the signs to use for each servo since they 
+// are different for left/right hips, and for left/right feet.)
+//------------------------------------------------------------------------------
+
+
+int LeftHipCentre()              { return LEFT_HIP_CENTRE; }
+int LeftHipIn(int millisecs)     { return LEFT_HIP_CENTRE + (FRONT_JOINT_HIPS * millisecs); }
+int LeftHipOut(int millisecs)    { return LEFT_HIP_CENTRE - (FRONT_JOINT_HIPS * millisecs); }
+
+int RightHipCentre()             { return RIGHT_HIP_CENTRE; }
+int RightHipIn(int millisecs)    { return RIGHT_HIP_CENTRE - (FRONT_JOINT_HIPS * millisecs); }
+int RightHipOut(int millisecs)   { return RIGHT_HIP_CENTRE + (FRONT_JOINT_HIPS * millisecs); }
+
+int LeftFootFlat()               { return LEFT_FOOT_CENTRE; }
+int LeftFootUp(int millisecs)    { return LEFT_FOOT_CENTRE - millisecs; }
+int LeftFootDown(int millisecs)  { return LEFT_FOOT_CENTRE + millisecs; }
+
+int RightFootFlat()              { return RIGHT_FOOT_CENTRE; }
+int RightFootUp(int millisecs)   { return RIGHT_FOOT_CENTRE + millisecs; }
+int RightFootDown(int millisecs) { return RIGHT_FOOT_CENTRE - millisecs; }
+
+
 //----------------------------------------------------------------------------------
 // Keyframe animation data for standard walking gait and other servo animations
 //
@@ -1737,34 +1766,6 @@ int NumOfFrames(int animData[][5])
     return animData[0][0];
 }
 
-
-//------------------------------------------------------------------------------
-// Helper functions to help calculate joint values in a more user-friendly way.
-// You can adjust the signs here if the servos are setup in a different way.
-// Updating here means the animation data doesn't need to be modified if the
-// servos are setup differently.
-// (E.g. Original Bob's hip servos are backwards to MobBob's.)
-//
-// (Also, I find it hard to remember the signs to use for each servo since they 
-// are different for left/right hips, and for left/right feet.)
-//------------------------------------------------------------------------------
-
-
-int LeftHipCentre()              { return LEFT_HIP_CENTRE; }
-int LeftHipIn(int millisecs)     { return LEFT_HIP_CENTRE + (FRONT_JOINT_HIPS * millisecs); }
-int LeftHipOut(int millisecs)    { return LEFT_HIP_CENTRE - (FRONT_JOINT_HIPS * millisecs); }
-
-int RightHipCentre()             { return RIGHT_HIP_CENTRE; }
-int RightHipIn(int millisecs)    { return RIGHT_HIP_CENTRE - (FRONT_JOINT_HIPS * millisecs); }
-int RightHipOut(int millisecs)   { return RIGHT_HIP_CENTRE + (FRONT_JOINT_HIPS * millisecs); }
-
-int LeftFootFlat()               { return LEFT_FOOT_CENTRE; }
-int LeftFootUp(int millisecs)    { return LEFT_FOOT_CENTRE - millisecs; }
-int LeftFootDown(int millisecs)  { return LEFT_FOOT_CENTRE + millisecs; }
-
-int RightFootFlat()              { return RIGHT_FOOT_CENTRE; }
-int RightFootUp(int millisecs)   { return RIGHT_FOOT_CENTRE + millisecs; }
-int RightFootDown(int millisecs) { return RIGHT_FOOT_CENTRE - millisecs; }
 
 
 
