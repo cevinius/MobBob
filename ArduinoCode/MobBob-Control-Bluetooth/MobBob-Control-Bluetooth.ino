@@ -1381,14 +1381,14 @@ void loop_Parser()
 //===============================================================================
 
 // Call this to play the given animation once. Pass in NULL if there is no finishAnim.
-void PlayAnim(int animToPlay[][5], int finishAnim[][5], char *completeStr)
+void PlayAnim(int animToPlay[][5], int finishAnim[][5], const char *completeStr)
 {
     // Put this in the queue.
     PlayAnimNumTimes(animToPlay, finishAnim, 1, completeStr);
 }
 
 // Call this to loop the given animation. Pass in NULL if there is no finishAnim.
-void LoopAnim(int animToPlay[][5], int finishAnim[][5], char *completeStr)
+void LoopAnim(int animToPlay[][5], int finishAnim[][5], const char *completeStr)
 {
     // Put this in the queue.
     PlayAnimNumTimes(animToPlay, finishAnim, -1, completeStr);
@@ -1397,7 +1397,7 @@ void LoopAnim(int animToPlay[][5], int finishAnim[][5], char *completeStr)
 // Call this to play the given animation the specified number of times. 
 // -1 number of times will make it loop forever.
 // Pass in NULL if there is no finishAnim.
-void PlayAnimNumTimes(int animToPlay[][5], int finishAnim[][5], int numTimes, char *completeStr)
+void PlayAnimNumTimes(int animToPlay[][5], int finishAnim[][5], int numTimes, const char *completeStr)
 {
     // Put this in the queue.
     nextAnim         = animToPlay;
@@ -1418,7 +1418,7 @@ void PlayAnimNumTimes(int animToPlay[][5], int finishAnim[][5], int numTimes, ch
 }
 
 // Stop after the current animation.
-void StopAnim(char *completeStr)
+void StopAnim(const char *completeStr)
 {
     // Put this in the queue.
     PlayAnimNumTimes(standStraightAnim, NULL, 1, completeStr);
@@ -1426,7 +1426,7 @@ void StopAnim(char *completeStr)
 
 // Stop immediately and lerp robot to zero position, interrupting 
 // any animation that is in progress.
-void StopAnimImmediate(char *completeStr)
+void StopAnimImmediate(const char *completeStr)
 {
     // Put this in the queue.
     interruptInProgressAnim = true;
@@ -1438,7 +1438,7 @@ void StopAnimImmediate(char *completeStr)
 // For positions, 0 means centered.
 // For hips, -ve is hip left, +ve is hip right
 // For feet, -ve is foot down, +ve is foot up
-void SetServos(int tweenTime, int leftHip, int leftFoot, int rightHip, int rightFoot, char* completeStr)
+void SetServos(int tweenTime, int leftHip, int leftFoot, int rightHip, int rightFoot, const char* completeStr)
 {
     // Save the completeStr
     if (completeStr == NULL)
